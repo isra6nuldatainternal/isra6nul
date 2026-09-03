@@ -30,9 +30,6 @@
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
-
-  /* Fine film-grain texture used on placeholder frames (SVG feTurbulence, base64) */
-  --grain-uri: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMjAnIGhlaWdodD0nMjIwJz48ZmlsdGVyIGlkPSduJz48ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nMC44NScgbnVtT2N0YXZlcz0nMicgc3RpdGNoVGlsZXM9J3N0aXRjaCcgcmVzdWx0PSd0Jy8+PGZlQ29sb3JNYXRyaXggaW49J3QnIHR5cGU9J3NhdHVyYXRlJyB2YWx1ZXM9JzAnLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWx0ZXI9J3VybCglMjNuKScvPjwvc3ZnPg==");
 }
 
 /* ==========================================================================
@@ -429,35 +426,27 @@ h1, h2, h3, h4, p, figure { margin: 0; }
   border-radius: 2px;
   background: var(--ink);
   isolation: isolate;
-}
-.frame__tone {
-  position: absolute;
-  inset: 0;
-  transform: scale(1.02);
-}
-.frame__grain {
-  position: absolute;
-  inset: 0;
-  background-image: var(--grain-uri);
-  background-size: 140px 140px;
-  opacity: 0.65;
-  mix-blend-mode: overlay;
-}
-.frame__vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 90% at 50% 30%, transparent 40%, rgba(0, 0, 0, 0.34) 100%);
   box-shadow: inset 0 0 0 1px rgba(255, 250, 240, 0.06);
+}
+.frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
 }
 .frame__caption {
   position: absolute;
   left: 0; right: 0; bottom: 0;
   padding: clamp(0.9rem, 2vw, 1.4rem);
+  padding-top: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 0.75rem;
   color: #FBF7EF;
+  background: linear-gradient(to top, rgba(10, 8, 5, 0.68) 0%, rgba(10, 8, 5, 0) 100%);
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.35s var(--ease-soft), transform 0.35s var(--ease-soft);
@@ -471,46 +460,6 @@ h1, h2, h3, h4, p, figure { margin: 0; }
   text-transform: uppercase;
   color: rgba(251, 247, 239, 0.75);
   white-space: nowrap;
-}
-
-/* Each tone layers a soft directional "light pool" and a falling-off shadow
-   pool over a linear base, so a flat CSS gradient reads as considered studio
-   light rather than a plain swatch. */
-.frame[data-tone="1"] .frame__tone {
-  background:
-    radial-gradient(60% 50% at 28% 22%, rgba(255, 240, 210, 0.55) 0%, rgba(255, 240, 210, 0) 62%),
-    radial-gradient(55% 65% at 80% 85%, rgba(18, 13, 7, 0.5) 0%, rgba(18, 13, 7, 0) 68%),
-    linear-gradient(155deg, #C7A876 0%, #8C6B3E 55%, #46341C 100%);
-}
-.frame[data-tone="2"] .frame__tone {
-  background:
-    radial-gradient(55% 60% at 72% 20%, rgba(255, 248, 232, 0.6) 0%, rgba(255, 248, 232, 0) 60%),
-    radial-gradient(60% 55% at 22% 88%, rgba(30, 24, 16, 0.4) 0%, rgba(30, 24, 16, 0) 65%),
-    linear-gradient(160deg, #EFE6D6 0%, #C9BBA0 45%, #746650 100%);
-}
-.frame[data-tone="3"] .frame__tone {
-  background:
-    radial-gradient(50% 55% at 22% 78%, rgba(230, 224, 210, 0.4) 0%, rgba(230, 224, 210, 0) 60%),
-    radial-gradient(60% 60% at 75% 18%, rgba(15, 12, 8, 0.45) 0%, rgba(15, 12, 8, 0) 65%),
-    linear-gradient(145deg, #B7B0A1 0%, #726A5B 60%, #2E2A22 100%);
-}
-.frame[data-tone="4"] .frame__tone {
-  background:
-    radial-gradient(58% 50% at 78% 26%, rgba(255, 236, 200, 0.55) 0%, rgba(255, 236, 200, 0) 60%),
-    radial-gradient(55% 60% at 24% 82%, rgba(24, 17, 9, 0.45) 0%, rgba(24, 17, 9, 0) 65%),
-    linear-gradient(150deg, #D9CBAE 0%, #A9885C 50%, #5B4426 100%);
-}
-.frame[data-tone="5"] .frame__tone {
-  background:
-    radial-gradient(52% 55% at 26% 24%, rgba(220, 214, 200, 0.42) 0%, rgba(220, 214, 200, 0) 60%),
-    radial-gradient(58% 62% at 80% 80%, rgba(10, 8, 5, 0.5) 0%, rgba(10, 8, 5, 0) 66%),
-    linear-gradient(165deg, #9B9285 0%, #5C554A 55%, #211D18 100%);
-}
-.frame[data-tone="6"] .frame__tone {
-  background:
-    radial-gradient(56% 52% at 70% 78%, rgba(255, 238, 205, 0.5) 0%, rgba(255, 238, 205, 0) 62%),
-    radial-gradient(55% 55% at 20% 20%, rgba(20, 15, 8, 0.4) 0%, rgba(20, 15, 8, 0) 65%),
-    linear-gradient(140deg, #E4D2B4 0%, #B99B6C 45%, #634B29 100%);
 }
 
 /* ==========================================================================

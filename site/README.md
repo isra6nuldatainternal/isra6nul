@@ -38,9 +38,12 @@ palette. Tokens live at the top of `assets/css/style.css`.
 
 ## Known limitation: no real photography
 
-See [`PLACEHOLDER-IMAGERY.md`](./PLACEHOLDER-IMAGERY.md) — every image slot
-is a generated placeholder, with exact swap-in instructions for when real
-photos are available.
+`assets/img/*.jpg` are generated abstract "light study" compositions
+(gradient + bokeh + rim light + film grain, rendered in a real canvas and
+exported to real files — see [`PLACEHOLDER-GENERATOR.md`](./PLACEHOLDER-GENERATOR.md)),
+not photographs of any real subject. See
+[`PLACEHOLDER-IMAGERY.md`](./PLACEHOLDER-IMAGERY.md) for why, and exact
+swap-in instructions for when real photos are available.
 
 ## Accessibility notes
 
@@ -53,7 +56,8 @@ photos are available.
   mid-visit.
 - Custom cursor and magnetic gallery hover are gated on `(hover: hover) and
   (pointer: fine)` and don't run on touch devices.
-- Decorative layers (`.frame__tone`, `.frame__grain`, `.frame__vignette`,
-  gradient backdrops) are `aria-hidden`; gallery captions remain in the
-  accessibility tree even though they're visually hover-revealed.
+- Gallery/portrait images carry honest `alt` text describing the actual
+  (abstract) image content, with `loading="lazy"`; the caption scrim
+  overlay is `aria-hidden`-free since it carries no independent content of
+  its own — the caption text underneath is what's exposed to AT.
 - Touch targets (nav links, buttons, footer links) are ≥ 44×44px.

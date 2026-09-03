@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Northlight placeholder generator</title></head>
+<body style="margin:0;background:#111;">
+<div id="host"></div>
+<script>
+// Seeded PRNG (mulberry32) so each composition is reproducible from its seed.
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const MOODS = {
+  gold:   { stops: ["#E9CD9C", "#B9884E", "#5A3E20"], hi: "#FFF3D6", sh: "#241505", angle: 128 },
+  taupe:  { stops: ["#EFE7D6", "#C4B79C", "#5F5442"], hi: "#FFFBEF", sh: "#1C1810", angle: 150 },
+  umber:  { stops: ["#C9BFA9", "#8A7C61", "#2A2317"], hi: "#F3E9CE", sh: "#0E0B06", angle: 118 },
+  amber:  { stops: ["#E3C89A", "#B2864F", "#4A2F16"], hi: "#FFE9BC", sh: "#1A0F04", angle: 142 },
+  slate:  { stops: ["#C7C0AF", "#7B715C", "#211C13"], hi: "#EFE7D2", sh: "#0A0805", angle: 160 },
+  blush:  { stops: ["#EAD9BE", "#C09E71", "#553A21"], hi: "#FBE9CF", sh: "#1E1006", angle: 108 },
+};
+
+function hexToRgb(hex) {
+  const v = parseInt(hex.slice(1), 16);
+  return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+}
+function rgba([r, g, b], a) { return `rgba(${r},${g},${b},${a})`; }
+
+function drawComposition(canvas, { w, h, moodKey, seed }) {
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  const rand = mulberry32(seed);
+  const mood = MOODS[moodKey];
+  const [c0, c1, c2] = mood.stops.map(hexToRgb);
+  const hi = hexToRgb(mood.hi);
+  const sh = hexToRgb(mood.sh);
+
+  ctx.filter = "saturate(0.92) contrast(1.03)";
+
+  // Base directional gradient
+  const rad = (mood.angle * Math.PI) / 180;
+  const cx = w / 2, cy = h / 2;
+  const dx = Math.cos(rad) * Math.max(w, h) * 0.6;
+  const dy = Math.sin(rad) * Math.max(w, h) * 0.6;
+  const base = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+  base.addColorStop(0, rgba(c0, 1));
+  base.addColorStop(0.55, rgba(c1, 1));
+  base.addColorStop(1, rgba(c2, 1));
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.filter = "none";
+
+  // Directional shadow pool (grounds the composition)
+  const shPool = ctx.createRadialGradient(
+    w * (0.2 + rand() * 0.15), h * (0.78 + rand() * 0.12), 0,
+    w * (0.2 + rand() * 0.15), h * (0.78 + rand() * 0.12), Math.max(w, h) * 0.55
+  );
+  shPool.addColorStop(0, rgba(sh, 0.55));
+  shPool.addColorStop(1, rgba(sh, 0));
+  ctx.globalCompositeOperation = "multiply";
+  ctx.fillStyle = shPool;
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = "source-over";
+
+  // Rim-light streak (suggests a window/edge light source)
+  ctx.save();
+  const streakX = w * (0.18 + rand() * 0.6);
+  const streakY = h * (0.12 + rand() * 0.25);
+  ctx.translate(streakX, streakY);
+  ctx.rotate(((rand() * 40 - 20) * Math.PI) / 180);
+  const streakW = w * (0.55 + rand() * 0.25);
+  const streakH = h * (0.1 + rand() * 0.06);
+  const streakGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, streakW / 2);
+  streakGrad.addColorStop(0, rgba(hi, 0.55));
+  streakGrad.addColorStop(1, rgba(hi, 0));
+  ctx.globalCompositeOperation = "screen";
+  ctx.fillStyle = streakGrad;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, streakW / 2, streakH / 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Bokeh highlights (shallow depth-of-field feel)
+  const bokehCount = 5 + Math.floor(rand() * 4);
+  for (let i = 0; i < bokehCount; i++) {
+    const bx = w * rand();
+    const by = h * rand();
+    const br = Math.max(w, h) * (0.03 + rand() * 0.09);
+    const warm = rand() > 0.3;
+    const tint = warm ? hi : [255, 248, 235];
+    const grad = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+    grad.addColorStop(0, rgba(tint, 0.4 + rand() * 0.25));
+    grad.addColorStop(0.6, rgba(tint, 0.12));
+    grad.addColorStop(1, rgba(tint, 0));
+    ctx.globalCompositeOperation = "screen";
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(bx, by, br, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalCompositeOperation = "source-over";
+
+  // Vignette
+  const vig = ctx.createRadialGradient(w / 2, h * 0.42, Math.min(w, h) * 0.25, w / 2, h / 2, Math.max(w, h) * 0.75);
+  vig.addColorStop(0, "rgba(0,0,0,0)");
+  vig.addColorStop(1, "rgba(0,0,0,0.42)");
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, w, h);
+
+  // Film grain (per-pixel noise)
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (rand() - 0.5) * 22;
+    d[i] = Math.min(255, Math.max(0, d[i] + n));
+    d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + n));
+    d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+window.renderAll = function (specs) {
+  const host = document.getElementById("host");
+  host.innerHTML = "";
+  const canvases = {};
+  specs.forEach((spec) => {
+    const c = document.createElement("canvas");
+    c.id = "c-" + spec.id;
+    host.appendChild(c);
+    drawComposition(c, spec);
+    canvases[spec.id] = c;
+  });
+  window.__canvases = canvases;
+  return specs.map((s) => s.id);
+};
+</script>
+</body>
+</html>
