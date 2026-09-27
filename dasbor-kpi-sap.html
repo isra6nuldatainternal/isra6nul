@@ -1,0 +1,1110 @@
+<title>Dasbor KPI SAP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f2f1ec;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --border-strong: rgba(11,11,11,0.16);
+
+    --cat-hazard: #2a78d6;
+    --cat-inspeksi: #eb6834;
+    --cat-bbs: #1baf7a;
+    --cat-pto: #eda100;
+    --cat-hazard-soft: rgba(42,120,214,0.14);
+    --cat-inspeksi-soft: rgba(235,104,52,0.14);
+    --cat-bbs-soft: rgba(27,175,122,0.14);
+    --cat-pto-soft: rgba(237,161,0,0.16);
+
+    --status-good: #0ca30c;
+    --status-warning: #c98100;
+    --status-critical: #d03b3b;
+    --status-good-soft: rgba(12,163,12,0.12);
+    --status-warning-soft: rgba(201,129,0,0.14);
+    --status-critical-soft: rgba(208,59,59,0.12);
+
+    --benchmark: #8b8a95;
+    --person-accent: #4a3aa7;
+    --person-accent-soft: rgba(74,58,167,0.14);
+
+    --font-display: "Archivo", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    --radius-card: 14px;
+    --radius-sm: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0d0d0d;
+      --surface: #171716;
+      --surface-2: #1e1e1c;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8d86;
+      --grid: #2c2c2a;
+      --baseline: #3a3a37;
+      --border: rgba(255,255,255,0.10);
+      --border-strong: rgba(255,255,255,0.18);
+
+      --cat-hazard: #3987e5;
+      --cat-inspeksi: #d95926;
+      --cat-bbs: #199e70;
+      --cat-pto: #c98500;
+      --cat-hazard-soft: rgba(57,135,229,0.18);
+      --cat-inspeksi-soft: rgba(217,89,38,0.18);
+      --cat-bbs-soft: rgba(25,158,112,0.18);
+      --cat-pto-soft: rgba(201,133,0,0.20);
+
+      --status-good: #0ca30c;
+      --status-warning: #fab219;
+      --status-critical: #e66767;
+      --status-good-soft: rgba(12,163,12,0.18);
+      --status-warning-soft: rgba(250,178,25,0.16);
+      --status-critical-soft: rgba(230,103,103,0.16);
+
+      --benchmark: #8b8a95;
+      --person-accent: #9085e9;
+      --person-accent-soft: rgba(144,133,233,0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0d0d0d;
+    --surface: #171716;
+    --surface-2: #1e1e1c;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8d86;
+    --grid: #2c2c2a;
+    --baseline: #3a3a37;
+    --border: rgba(255,255,255,0.10);
+    --border-strong: rgba(255,255,255,0.18);
+
+    --cat-hazard: #3987e5;
+    --cat-inspeksi: #d95926;
+    --cat-bbs: #199e70;
+    --cat-pto: #c98500;
+    --cat-hazard-soft: rgba(57,135,229,0.18);
+    --cat-inspeksi-soft: rgba(217,89,38,0.18);
+    --cat-bbs-soft: rgba(25,158,112,0.18);
+    --cat-pto-soft: rgba(201,133,0,0.20);
+
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-critical: #e66767;
+    --status-good-soft: rgba(12,163,12,0.18);
+    --status-warning-soft: rgba(250,178,25,0.16);
+    --status-critical-soft: rgba(230,103,103,0.16);
+
+    --benchmark: #8b8a95;
+    --person-accent: #9085e9;
+    --person-accent-soft: rgba(144,133,233,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    display:flex;
+    min-height:100%;
+    align-items:stretch;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:280px;
+    flex:0 0 280px;
+    background:var(--surface-2);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    position:sticky;
+    top:0;
+  }
+  .brand{
+    padding:20px 18px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  .brand-mark{
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:0.02em;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .brand-mark .lamp{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--cat-bbs);
+    display:inline-block;
+    box-shadow:0 0 0 3px var(--cat-bbs-soft);
+  }
+  .brand-sub{
+    font-size:11px;
+    color:var(--text-muted);
+    margin-top:4px;
+    font-family:var(--font-mono);
+    letter-spacing:0.03em;
+  }
+  .nav-overview{
+    margin:14px 14px 8px;
+    padding:11px 12px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border-strong);
+    background:var(--surface);
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:13.5px;
+    color:var(--text-primary);
+    cursor:pointer;
+    text-align:left;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .nav-overview:hover{ background:var(--surface-2); }
+  .nav-overview.active{
+    background:var(--text-primary);
+    color:var(--bg);
+    border-color:var(--text-primary);
+  }
+  .nav-overview .ic{ font-size:14px; opacity:.8; }
+
+  .search-wrap{ padding:2px 14px 10px; }
+  .search-input{
+    width:100%;
+    padding:8px 10px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    font-size:12.5px;
+    outline:none;
+  }
+  .search-input:focus{ border-color:var(--text-muted); }
+  .search-input::placeholder{ color:var(--text-muted); }
+
+  .roster{
+    flex:1;
+    overflow-y:auto;
+    padding:0 10px 16px;
+  }
+  .roster-dept{
+    margin-top:10px;
+  }
+  .roster-dept-label{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--text-muted);
+    padding:4px 8px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .roster-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 8px;
+    border-radius:8px;
+    border:none;
+    background:transparent;
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    font-size:12.5px;
+    text-align:left;
+    cursor:pointer;
+  }
+  .roster-item:hover{ background:var(--surface); }
+  .roster-item.active{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--border-strong); }
+  .roster-item .dot{
+    width:7px;height:7px;border-radius:50%;
+    flex:0 0 7px;
+  }
+  .roster-item .nm{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .roster-item .pc{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-muted);
+  }
+  .roster-empty{
+    padding:14px 8px;
+    color:var(--text-muted);
+    font-size:12.5px;
+  }
+
+  .mobile-picker{ display:none; }
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:26px 30px 60px;
+    max-width:1180px;
+  }
+  .topline{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-bottom:14px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .topline button{
+    background:none;border:none;padding:0;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-secondary);
+    text-decoration:underline;
+    cursor:pointer;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+
+  h1.page-title{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:clamp(24px,3.4vw,34px);
+    letter-spacing:-0.01em;
+    margin:0 0 6px;
+    text-wrap:balance;
+  }
+  .page-sub{
+    color:var(--text-secondary);
+    font-size:14px;
+    margin:0 0 26px;
+    max-width:62ch;
+  }
+
+  .person-head{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .avatar{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:18px;
+    flex:0 0 52px;
+  }
+  .person-name-block h1{
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:clamp(22px,3vw,30px);
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .person-meta{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    font-size:13px; color:var(--text-secondary);
+  }
+  .tag{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 9px;
+    border-radius:99px;
+    border:1px solid var(--border-strong);
+    font-size:12px;
+    font-family:var(--font-mono);
+    color:var(--text-secondary);
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 11px;
+    border-radius:99px;
+    font-size:12px;
+    font-weight:600;
+    font-family:var(--font-body);
+  }
+  .pill .dot{ width:6px;height:6px;border-radius:50%; }
+  .pill.good{ background:var(--status-good-soft); color:var(--status-good); }
+  .pill.warning{ background:var(--status-warning-soft); color:var(--status-warning); }
+  .pill.critical{ background:var(--status-critical-soft); color:var(--status-critical); }
+  .pill.good .dot{ background:var(--status-good); }
+  .pill.warning .dot{ background:var(--status-warning); }
+  .pill.critical .dot{ background:var(--status-critical); }
+
+  /* ---------- Grid / Cards ---------- */
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .stat-tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-card);
+    padding:16px 16px 14px;
+  }
+  .stat-label{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--text-muted);
+    margin-bottom:8px;
+  }
+  .stat-value{
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:-0.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-foot{
+    font-size:12px;
+    color:var(--text-secondary);
+    margin-top:4px;
+  }
+  .stat-value.good{ color:var(--status-good); }
+  .stat-value.warning{ color:var(--status-warning); }
+  .stat-value.critical{ color:var(--status-critical); }
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:14px;
+    margin-bottom:14px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-card);
+    padding:18px 18px 14px;
+  }
+  .card-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:14.5px;
+    margin:0 0 2px;
+  }
+  .card-note{
+    font-size:12px;
+    color:var(--text-muted);
+    margin:0 0 12px;
+  }
+  .chart-box{ position:relative; width:100%; }
+  .chart-box.h-260{ height:260px; }
+  .chart-box.h-220{ height:220px; }
+  .chart-box.h-200{ height:200px; }
+  .chart-box.h-150{ height:150px; }
+
+  .legend-row{
+    display:flex; flex-wrap:wrap; gap:12px;
+    margin-bottom:10px;
+  }
+  .legend-item{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; color:var(--text-secondary);
+    font-family:var(--font-mono);
+  }
+  .legend-swatch{ width:10px;height:10px;border-radius:3px; }
+
+  .mini-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+  .mini-card{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 12px 6px;
+  }
+  .mini-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:2px;
+  }
+  .mini-title{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:600;
+  }
+  .mini-title .sw{ width:8px;height:8px;border-radius:2px; }
+  .mini-val{
+    font-family:var(--font-mono); font-weight:700; font-size:14px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .meter-list{ display:flex; flex-direction:column; gap:10px; }
+  .meter-row{ display:flex; align-items:center; gap:10px; }
+  .meter-rank{
+    font-family:var(--font-mono); font-size:11px; color:var(--text-muted);
+    width:16px; text-align:right; flex:0 0 16px;
+  }
+  .meter-name{ font-size:12.5px; flex:0 0 118px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .meter-track{
+    flex:1; height:9px; border-radius:99px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    overflow:hidden;
+    position:relative;
+  }
+  .meter-fill{ height:100%; border-radius:99px; }
+  .meter-fill.good{ background:var(--status-good); }
+  .meter-fill.warning{ background:var(--status-warning); }
+  .meter-fill.critical{ background:var(--status-critical); }
+  .meter-pct{
+    font-family:var(--font-mono); font-size:11.5px; width:42px; text-align:right; flex:0 0 42px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .leaderboard-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  .leaderboard-label{
+    font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase;
+    letter-spacing:0.05em; margin-bottom:10px; color:var(--text-muted);
+  }
+
+  .foot-note{
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:22px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+    line-height:1.5;
+  }
+
+  @media (max-width: 900px){
+    .sidebar{ display:none; }
+    .mobile-picker{
+      display:flex;
+      gap:8px;
+      padding:14px 16px;
+      background:var(--surface-2);
+      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:5;
+      flex-wrap:wrap;
+    }
+    .mobile-picker select{
+      flex:1; min-width:160px;
+      padding:9px 10px;
+      border-radius:8px;
+      border:1px solid var(--border-strong);
+      background:var(--surface);
+      color:var(--text-primary);
+      font-family:var(--font-body);
+      font-size:13px;
+    }
+    .mobile-picker button{
+      padding:9px 12px;
+      border-radius:8px;
+      border:1px solid var(--border-strong);
+      background:var(--text-primary);
+      color:var(--bg);
+      font-family:var(--font-body);
+      font-weight:600;
+      font-size:12.5px;
+    }
+    .app{ flex-direction:column; }
+    .main{ padding:18px 16px 50px; max-width:100%; }
+    .stat-row{ grid-template-columns:repeat(2,1fr); }
+    .card-grid{ grid-template-columns:1fr; }
+    .mini-grid{ grid-template-columns:1fr; }
+    .leaderboard-grid{ grid-template-columns:1fr; }
+  }
+  [hidden]{ display:none !important; }
+</style>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><span class="lamp"></span>KPI SAP</div>
+      <div class="brand-sub">JUNI&ndash;SEPTEMBER 2026</div>
+    </div>
+    <button class="nav-overview active" id="navOverviewBtn" onclick="showOverview()">
+      <span class="ic">&#9673;</span> Ringkasan Umum
+    </button>
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" type="text" placeholder="Cari nama karyawan...">
+    </div>
+    <nav class="roster" id="rosterList"></nav>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-picker">
+      <button onclick="showOverview()">Ringkasan</button>
+      <select id="mobileSelect" onchange="onMobileSelect(this.value)"></select>
+    </div>
+
+    <div id="view-overview" class="view"></div>
+    <div id="view-person" class="view" hidden></div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+const DATA = {"months":["Juni","Juli","Agustus","September"],"categories":["Hazard","Inspeksi","BBS","PTO"],"generatedNote":"Sel kosong pada bulan di mana seseorang tercatat dihitung sebagai 0% (target belum tercapai/tidak dilaporkan). Jika nama tidak muncul pada suatu bulan, bulan tsb dikosongkan (tidak dihitung) pada tren orang tsb.","overview":{"totalPeople":40,"totalDept":13,"overallCompanyAvg":0.4726354166666666,"companyAvgByMonth":{"Juni":{"Hazard":0.4351351351351351,"Inspeksi":0.6637837837837838,"BBS":0.3654054054054054,"PTO":0.47297297297297297,"overall":0.4843243243243243},"Juli":{"Hazard":0.6397058823529412,"Inspeksi":0.6123529411764705,"BBS":0.548235294117647,"PTO":0.6617647058823529,"overall":0.6155147058823529},"Agustus":{"Hazard":0.37882352941176467,"Inspeksi":0.44,"BBS":0.3723529411764706,"PTO":0.47058823529411764,"overall":0.4154411764705882},"September":{"Hazard":0.4674285714285714,"Inspeksi":0.6237142857142857,"BBS":0.43,"PTO":0.5214285714285715,"overall":0.5106428571428572}},"categoryAvgOverall":{"Hazard":0.44747916666666676,"Inspeksi":0.5630416666666666,"BBS":0.38835416666666667,"PTO":0.4916666666666666},"deptAvg":{"Explorasi":0.3034375,"Mine Operation":0.2803125,"Engineering":0.9216666666666667,"Ganish":0.0,"HSE":0.8500000000000001,"QAQC":0.2729861111111111,"Shipment":0.13145833333333332,"Logistic":0.36125,"Civil":0.7603125,"Maintenance":0.42703125000000003,"HCGA":0.5375,"Finance":0.18531250000000002,"Management":0.631875},"deptCount":{"Explorasi":2,"Mine Operation":4,"Engineering":3,"Ganish":1,"HSE":6,"QAQC":6,"Shipment":3,"Logistic":1,"Civil":2,"Maintenance":4,"HCGA":5,"Finance":2,"Management":1},"top5":[{"name":"Idris W","dept":"HSE","avg":1.0},{"name":"Lukman Jaya","dept":"HCGA","avg":1.0},{"name":"Dian A","dept":"HSE","avg":0.97875},{"name":"Nur Arif W","dept":"Engineering","avg":0.958125},{"name":"ST Rahmadanisa","dept":"HSE","avg":0.921875}],"bottom5":[{"name":"Rezah Pontoh","dept":"Maintenance","avg":0.0},{"name":"M Pajar","dept":"Ganish","avg":0.0},{"name":"Hardianti","dept":"Mine Operation","avg":0.0},{"name":"Bahtiar","dept":"Shipment","avg":0.03125},{"name":"Ahmad","dept":"Shipment","avg":0.085625}],"distribution":[0.0,0.0,0.0,0.03125,0.085625,0.09125000000000001,0.09875,0.16416666666666666,0.17375000000000002,0.17375000000000002,0.175,0.19333333333333336,0.19687500000000002,0.21687499999999998,0.275625,0.27749999999999997,0.28500000000000003,0.285625,0.321875,0.35625,0.36125,0.5,0.5066666666666667,0.571875,0.62875,0.631875,0.6875,0.706875,0.8043750000000001,0.8125,0.833125,0.871875,0.895625,0.91125,0.920625,0.921875,0.958125,0.97875,1.0,1.0],"deptPeople":{"Explorasi":[{"name":"A Jalil","avg":0.321875},{"name":"Ariesta","avg":0.28500000000000003}],"Mine Operation":[{"name":"Darrisalam","avg":0.62875},{"name":"Hasrianti","avg":0.275625},{"name":"Pichal","avg":0.21687499999999998},{"name":"Hardianti","avg":0.0}],"Engineering":[{"name":"Nur Arif W","avg":0.958125},{"name":"M Sarif J","avg":0.91125},{"name":"Odang S","avg":0.895625}],"Ganish":[{"name":"M Pajar","avg":0.0}],"HSE":[{"name":"Idris W","avg":1.0},{"name":"Dian A","avg":0.97875},{"name":"ST Rahmadanisa","avg":0.921875},{"name":"Maria N","avg":0.920625},{"name":"Safely DC","avg":0.706875},{"name":"M Isranul H","avg":0.571875}],"QAQC":[{"name":"Hadri","avg":0.5066666666666667},{"name":"Andi Sapri","avg":0.5},{"name":"Virda Yanti","avg":0.19333333333333336},{"name":"Alma","avg":0.175},{"name":"Cindy","avg":0.16416666666666666},{"name":"Kelviano A","avg":0.09875}],"Shipment":[{"name":"M Asrun","avg":0.27749999999999997},{"name":"Ahmad","avg":0.085625},{"name":"Bahtiar","avg":0.03125}],"Logistic":[{"name":"Endang Puji L","avg":0.36125}],"Civil":[{"name":"Wudi G","avg":0.833125},{"name":"Ikhwan D","avg":0.6875}],"Maintenance":[{"name":"Yoga M Y","avg":0.8125},{"name":"Firmansyah s","avg":0.8043750000000001},{"name":"Zainal Abidin","avg":0.09125000000000001},{"name":"Rezah Pontoh","avg":0.0}],"HCGA":[{"name":"Lukman Jaya","avg":1.0},{"name":"Nurmaida","avg":0.871875},{"name":"Windi W","avg":0.35625},{"name":"Aswan","avg":0.285625},{"name":"Adlina Husni P","avg":0.17375000000000002}],"Finance":[{"name":"Nining S","avg":0.19687500000000002},{"name":"Helviana","avg":0.17375000000000002}],"Management":[{"name":"Riski Yanti","avg":0.631875}]},"deptOrder":["Engineering","HSE","Civil","Management","HCGA","Maintenance","Logistic","Explorasi","Mine Operation","QAQC","Finance","Shipment","Ganish"]},"people":{"A Jalil":{"dept":"Explorasi","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.5,"BBS":0.16,"PTO":0.0},"Juli":{"Hazard":0.5,"Inspeksi":0.75,"BBS":0.0,"PTO":1},"Agustus":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.08,"Inspeksi":1,"BBS":0.16,"PTO":1}},"avgByMonth":{"Juni":0.165,"Juli":0.5625,"Agustus":0.0,"September":0.56},"avgByCategory":{"Hazard":0.145,"Inspeksi":0.5625,"BBS":0.08,"PTO":0.5},"overallAvg":0.321875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":22},"Ariesta":{"dept":"Explorasi","months":{"Juni":{"Hazard":0.08,"Inspeksi":1,"BBS":0.33,"PTO":0.25},"Juli":{"Hazard":0.91,"Inspeksi":0.25,"BBS":0.16,"PTO":0.75},"Agustus":{"Hazard":0.25,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.08,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.41500000000000004,"Juli":0.5175000000000001,"Agustus":0.125,"September":0.0825},"avgByCategory":{"Hazard":0.33,"Inspeksi":0.4375,"BBS":0.1225,"PTO":0.25},"overallAvg":0.28500000000000003,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":24},"Hasrianti":{"dept":"Mine Operation","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.5},"Agustus":{"Hazard":0.25,"Inspeksi":0.0,"BBS":0.16,"PTO":0.0},"September":{"Hazard":0.5,"Inspeksi":0.75,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.0625,"Juli":0.125,"Agustus":0.10250000000000001,"September":0.8125},"avgByCategory":{"Hazard":0.1875,"Inspeksi":0.25,"BBS":0.29,"PTO":0.375},"overallAvg":0.275625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":26},"Hardianti":{"dept":"Mine Operation","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.0},"avgByCategory":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"overallAvg":0.0,"monthsPresent":["Juni"],"rank":38},"Darrisalam":{"dept":"Mine Operation","months":{"Juni":{"Hazard":0.66,"Inspeksi":0.5,"BBS":0.16,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":0.33,"PTO":1},"Agustus":{"Hazard":0.66,"Inspeksi":0.25,"BBS":0.5,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.5800000000000001,"Juli":0.8325,"Agustus":0.6025,"September":0.5},"avgByCategory":{"Hazard":0.8300000000000001,"Inspeksi":0.6875,"BBS":0.2475,"PTO":0.75},"overallAvg":0.62875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":16},"Pichal":{"dept":"Mine Operation","months":{"Juni":{"Hazard":0.41,"Inspeksi":1,"BBS":0.16,"PTO":0.25},"Juli":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.32,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.08,"Inspeksi":1,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.45499999999999996,"Juli":0.08,"Agustus":0.0625,"September":0.27},"avgByCategory":{"Hazard":0.1225,"Inspeksi":0.5625,"BBS":0.12,"PTO":0.0625},"overallAvg":0.21687499999999998,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":27},"Nur Arif W":{"dept":"Engineering","months":{"Juni":{"Hazard":0.33,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.8325,"Juli":1.0,"Agustus":1.0,"September":1.0},"avgByCategory":{"Hazard":0.8325,"Inspeksi":1.0,"BBS":1.0,"PTO":1.0},"overallAvg":0.958125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":4},"Odang S":{"dept":"Engineering","months":{"Juni":{"Hazard":0.83,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":0.0,"Inspeksi":1,"BBS":0.5,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.9575,"Juli":1.0,"Agustus":0.625,"September":1.0},"avgByCategory":{"Hazard":0.7075,"Inspeksi":1.0,"BBS":0.875,"PTO":1.0},"overallAvg":0.895625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":8},"M Sarif J":{"dept":"Engineering","months":{"Juni":{"Hazard":1,"Inspeksi":0.25,"BBS":0.83,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":0.5,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.77,"Juli":1.0,"Agustus":0.875,"September":1.0},"avgByCategory":{"Hazard":1.0,"Inspeksi":0.6875,"BBS":0.9575,"PTO":1.0},"overallAvg":0.91125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":7},"M Pajar":{"dept":"Ganish","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.0},"avgByCategory":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"overallAvg":0.0,"monthsPresent":["Juni"],"rank":39},"Safely DC":{"dept":"HSE","months":{"Juni":{"Hazard":0.75,"Inspeksi":1,"BBS":0.66,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":0.25,"Inspeksi":0.25,"BBS":0.0,"PTO":1},"September":{"Hazard":0.4,"Inspeksi":1,"BBS":0.5,"PTO":0.5}},"avgByMonth":{"Juni":0.8525,"Juli":1.0,"Agustus":0.375,"September":0.6},"avgByCategory":{"Hazard":0.6,"Inspeksi":0.8125,"BBS":0.54,"PTO":0.875},"overallAvg":0.706875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":13},"Maria N":{"dept":"HSE","months":{"Juni":{"Hazard":0.66,"Inspeksi":1,"BBS":0.66,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":0.75,"Inspeksi":1,"BBS":0.66,"PTO":1}},"avgByMonth":{"Juni":0.8300000000000001,"Juli":1.0,"Agustus":1.0,"September":0.8525},"avgByCategory":{"Hazard":0.8525,"Inspeksi":1.0,"BBS":0.8300000000000001,"PTO":1.0},"overallAvg":0.920625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":6},"Dian A":{"dept":"HSE","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":0.66,"PTO":1}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":1.0,"September":0.915},"avgByCategory":{"Hazard":1.0,"Inspeksi":1.0,"BBS":0.915,"PTO":1.0},"overallAvg":0.97875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":3},"ST Rahmadanisa":{"dept":"HSE","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":0.0,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":0.75}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":0.75,"September":0.9375},"avgByCategory":{"Hazard":0.75,"Inspeksi":1.0,"BBS":1.0,"PTO":0.9375},"overallAvg":0.921875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":5},"M Isranul H":{"dept":"HSE","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":0.16,"PTO":1},"Juli":{"Hazard":0.91,"Inspeksi":1,"BBS":0.0,"PTO":0.25},"Agustus":{"Hazard":0.58,"Inspeksi":1,"BBS":0.0,"PTO":1},"September":{"Hazard":0.25,"Inspeksi":1,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.79,"Juli":0.54,"Agustus":0.645,"September":0.3125},"avgByCategory":{"Hazard":0.685,"Inspeksi":1.0,"BBS":0.04,"PTO":0.5625},"overallAvg":0.571875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":17},"Idris W":{"dept":"HSE","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":1.0,"September":1.0},"avgByCategory":{"Hazard":1.0,"Inspeksi":1.0,"BBS":1.0,"PTO":1.0},"overallAvg":1.0,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":1},"Kelviano A":{"dept":"QAQC","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":0.08,"Inspeksi":0.5,"BBS":0.0,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.5,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.0625,"Juli":0.145,"Agustus":0.0625,"September":0.125},"avgByCategory":{"Hazard":0.02,"Inspeksi":0.375,"BBS":0.0,"PTO":0.0},"overallAvg":0.09875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":34},"Virda Yanti":{"dept":"QAQC","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.5,"BBS":0.16,"PTO":0.0},"Juli":{"Hazard":0.33,"Inspeksi":0.5,"BBS":0.0,"PTO":0.5},"Agustus":{"Hazard":0.08,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.165,"Juli":0.3325,"Agustus":0.0825},"avgByCategory":{"Hazard":0.1366666666666667,"Inspeksi":0.4166666666666667,"BBS":0.05333333333333334,"PTO":0.16666666666666666},"overallAvg":0.19333333333333336,"monthsPresent":["Juni","Juli","Agustus"],"rank":29},"Alma":{"dept":"QAQC","months":{"Juni":{"Hazard":0.16,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.08,"Inspeksi":0.5,"BBS":0.16,"PTO":0.5}},"avgByMonth":{"Juni":0.04,"September":0.31},"avgByCategory":{"Hazard":0.12,"Inspeksi":0.25,"BBS":0.08,"PTO":0.25},"overallAvg":0.175,"monthsPresent":["Juni","September"],"rank":30},"Hadri":{"dept":"QAQC","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.5,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":0.5,"Inspeksi":1,"BBS":0.5,"PTO":1},"Agustus":{"Hazard":0.08,"Inspeksi":1,"BBS":0.5,"PTO":1}},"avgByMonth":{"Juni":0.125,"Juli":0.75,"Agustus":0.645},"avgByCategory":{"Hazard":0.19333333333333333,"Inspeksi":0.8333333333333334,"BBS":0.3333333333333333,"PTO":0.6666666666666666},"overallAvg":0.5066666666666667,"monthsPresent":["Juni","Juli","Agustus"],"rank":18},"Andi Sapri":{"dept":"QAQC","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.5},"avgByCategory":{"Hazard":1.0,"Inspeksi":1.0,"BBS":0.0,"PTO":0.0},"overallAvg":0.5,"monthsPresent":["Juni"],"rank":19},"Ahmad":{"dept":"Shipment","months":{"Juni":{"Hazard":0.25,"Inspeksi":0.0,"BBS":0.12,"PTO":0.0},"Juli":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":1},"Agustus":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.0925,"Juli":0.25,"Agustus":0.0,"September":0.0},"avgByCategory":{"Hazard":0.0625,"Inspeksi":0.0,"BBS":0.03,"PTO":0.25},"overallAvg":0.085625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":36},"M Asrun":{"dept":"Shipment","months":{"Juni":{"Hazard":0.41,"Inspeksi":0.5,"BBS":0.12,"PTO":0.0},"Juli":{"Hazard":0.58,"Inspeksi":0.25,"BBS":0.33,"PTO":1},"Agustus":{"Hazard":0.0,"Inspeksi":0.75,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.25}},"avgByMonth":{"Juni":0.25749999999999995,"Juli":0.54,"Agustus":0.1875,"September":0.125},"avgByCategory":{"Hazard":0.2475,"Inspeksi":0.4375,"BBS":0.1125,"PTO":0.3125},"overallAvg":0.27749999999999997,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":25},"Bahtiar":{"dept":"Shipment","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.25,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.0,"Juli":0.0625,"Agustus":0.0625,"September":0.0},"avgByCategory":{"Hazard":0.0,"Inspeksi":0.125,"BBS":0.0,"PTO":0.0},"overallAvg":0.03125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":37},"Endang Puji L":{"dept":"Logistic","months":{"Juni":{"Hazard":0.12,"Inspeksi":1,"BBS":0.0,"PTO":0.5},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":0.16,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.405,"Juli":1.0,"Agustus":0.04,"September":0.0},"avgByCategory":{"Hazard":0.32,"Inspeksi":0.5,"BBS":0.25,"PTO":0.375},"overallAvg":0.36125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":20},"Wudi G":{"dept":"Civil","months":{"Juni":{"Hazard":0.33,"Inspeksi":1,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.3325,"Juli":1.0,"Agustus":1.0,"September":1.0},"avgByCategory":{"Hazard":0.8325,"Inspeksi":1.0,"BBS":0.75,"PTO":0.75},"overallAvg":0.833125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":10},"Firmansyah s":{"dept":"Maintenance","months":{"Juni":{"Hazard":0.12,"Inspeksi":1,"BBS":0.25,"PTO":0.5},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":0.0,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.4675,"Juli":1.0,"Agustus":1.0,"September":0.75},"avgByCategory":{"Hazard":0.78,"Inspeksi":0.75,"BBS":0.8125,"PTO":0.875},"overallAvg":0.8043750000000001,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":12},"Zainal Abidin":{"dept":"Maintenance","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.66,"BBS":0.25,"PTO":0.0},"Juli":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.25,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.3,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.2275,"Juli":0.0625,"Agustus":0.075,"September":0.0},"avgByCategory":{"Hazard":0.0,"Inspeksi":0.24,"BBS":0.125,"PTO":0.0},"overallAvg":0.09125000000000001,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":35},"Yoga M Y":{"dept":"Maintenance","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":0.0,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":0.0,"BBS":1,"PTO":0.0}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":0.75,"September":0.5},"avgByCategory":{"Hazard":1.0,"Inspeksi":0.5,"BBS":1.0,"PTO":0.75},"overallAvg":0.8125,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":11},"Windi W":{"dept":"HCGA","months":{"Juni":{"Hazard":0.5,"Inspeksi":1,"BBS":0.25,"PTO":0.5},"Juli":{"Hazard":0.37,"Inspeksi":0.33,"BBS":0.0,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.75,"Inspeksi":1,"BBS":0.0,"PTO":1}},"avgByMonth":{"Juni":0.5625,"Juli":0.175,"Agustus":0.0,"September":0.6875},"avgByCategory":{"Hazard":0.405,"Inspeksi":0.5825,"BBS":0.0625,"PTO":0.375},"overallAvg":0.35625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":21},"Lukman Jaya":{"dept":"HCGA","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"September":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":1.0,"September":1.0},"avgByCategory":{"Hazard":1.0,"Inspeksi":1.0,"BBS":1.0,"PTO":1.0},"overallAvg":1.0,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":2},"Aswan":{"dept":"HCGA","months":{"Juni":{"Hazard":0.12,"Inspeksi":1,"BBS":0.0,"PTO":0.5},"Juli":{"Hazard":0.12,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.33,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.5,"Inspeksi":1,"BBS":0.0,"PTO":1}},"avgByMonth":{"Juni":0.405,"Juli":0.03,"Agustus":0.0825,"September":0.625},"avgByCategory":{"Hazard":0.185,"Inspeksi":0.5825,"BBS":0.0,"PTO":0.375},"overallAvg":0.285625,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":23},"Nurmaida":{"dept":"HCGA","months":{"Juni":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":1,"BBS":1,"PTO":1},"Agustus":{"Hazard":1,"Inspeksi":0.33,"BBS":1,"PTO":1},"September":{"Hazard":0.12,"Inspeksi":1,"BBS":0.5,"PTO":1}},"avgByMonth":{"Juni":1.0,"Juli":1.0,"Agustus":0.8325,"September":0.655},"avgByCategory":{"Hazard":0.78,"Inspeksi":0.8325,"BBS":0.875,"PTO":1.0},"overallAvg":0.871875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":9},"Adlina Husni P":{"dept":"HCGA","months":{"Juni":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"Juli":{"Hazard":0.5,"Inspeksi":0.33,"BBS":0.5,"PTO":0.5},"Agustus":{"Hazard":0.25,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.12,"Inspeksi":0.33,"BBS":0.25,"PTO":0.0}},"avgByMonth":{"Juni":0.0,"Juli":0.4575,"Agustus":0.0625,"September":0.175},"avgByCategory":{"Hazard":0.2175,"Inspeksi":0.165,"BBS":0.1875,"PTO":0.125},"overallAvg":0.17375000000000002,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":31},"Nining S":{"dept":"Finance","months":{"Juni":{"Hazard":0.25,"Inspeksi":0.66,"BBS":0.0,"PTO":1},"Juli":{"Hazard":0.12,"Inspeksi":0.0,"BBS":1.0,"PTO":0.0},"Agustus":{"Hazard":0.12,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.47750000000000004,"Juli":0.28,"Agustus":0.03,"September":0.0},"avgByCategory":{"Hazard":0.1225,"Inspeksi":0.165,"BBS":0.25,"PTO":0.25},"overallAvg":0.19687500000000002,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":28},"Helviana":{"dept":"Finance","months":{"Juni":{"Hazard":0.12,"Inspeksi":0.66,"BBS":0.25,"PTO":0.0},"Juli":{"Hazard":0.75,"Inspeksi":0.0,"BBS":1.0,"PTO":0.0},"Agustus":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"Juni":0.2575,"Juli":0.4375,"Agustus":0.0,"September":0.0},"avgByCategory":{"Hazard":0.2175,"Inspeksi":0.165,"BBS":0.3125,"PTO":0.0},"overallAvg":0.17375000000000002,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":32},"Riski Yanti":{"dept":"Management","months":{"Juni":{"Hazard":1,"Inspeksi":0.33,"BBS":1,"PTO":1},"Juli":{"Hazard":1,"Inspeksi":0.66,"BBS":0.25,"PTO":1},"Agustus":{"Hazard":0.12,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":1,"Inspeksi":0.75,"BBS":1,"PTO":1}},"avgByMonth":{"Juni":0.8325,"Juli":0.7275,"Agustus":0.03,"September":0.9375},"avgByCategory":{"Hazard":0.78,"Inspeksi":0.435,"BBS":0.5625,"PTO":0.75},"overallAvg":0.631875,"monthsPresent":["Juni","Juli","Agustus","September"],"rank":15},"Cindy":{"dept":"QAQC","months":{"Juli":{"Hazard":0.08,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"Agustus":{"Hazard":0.08,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"September":{"Hazard":0.4,"Inspeksi":0.5,"BBS":0.66,"PTO":0.25}},"avgByMonth":{"Juli":0.02,"Agustus":0.02,"September":0.4525},"avgByCategory":{"Hazard":0.18666666666666668,"Inspeksi":0.16666666666666666,"BBS":0.22,"PTO":0.08333333333333333},"overallAvg":0.16416666666666666,"monthsPresent":["Juli","Agustus","September"],"rank":33},"Ikhwan D":{"dept":"Civil","months":{"September":{"Hazard":0.25,"Inspeksi":1,"BBS":0.5,"PTO":1}},"avgByMonth":{"September":0.6875},"avgByCategory":{"Hazard":0.25,"Inspeksi":1.0,"BBS":0.5,"PTO":1.0},"overallAvg":0.6875,"monthsPresent":["September"],"rank":14},"Rezah Pontoh":{"dept":"Maintenance","months":{"September":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0}},"avgByMonth":{"September":0.0},"avgByCategory":{"Hazard":0.0,"Inspeksi":0.0,"BBS":0.0,"PTO":0.0},"overallAvg":0.0,"monthsPresent":["September"],"rank":40}}};
+const CATS = DATA.categories;
+const MONTHS = DATA.months;
+const TOTAL_PEOPLE = DATA.overview.totalPeople;
+
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function theme(){
+  return {
+    ink: cssVar('--text-primary'),
+    secondary: cssVar('--text-secondary'),
+    muted: cssVar('--text-muted'),
+    grid: cssVar('--grid'),
+    baseline: cssVar('--baseline'),
+    surface: cssVar('--surface'),
+    catHazard: cssVar('--cat-hazard'),
+    catInspeksi: cssVar('--cat-inspeksi'),
+    catBBS: cssVar('--cat-bbs'),
+    catPTO: cssVar('--cat-pto'),
+    catHazardSoft: cssVar('--cat-hazard-soft'),
+    catInspeksiSoft: cssVar('--cat-inspeksi-soft'),
+    catBBSSoft: cssVar('--cat-bbs-soft'),
+    catPTOSoft: cssVar('--cat-pto-soft'),
+    good: cssVar('--status-good'),
+    warning: cssVar('--status-warning'),
+    critical: cssVar('--status-critical'),
+    benchmark: cssVar('--benchmark'),
+    personAccent: cssVar('--person-accent'),
+    personAccentSoft: cssVar('--person-accent-soft'),
+  };
+}
+
+function catColorMap(){ const t=theme(); return {Hazard:t.catHazard, Inspeksi:t.catInspeksi, BBS:t.catBBS, PTO:t.catPTO}; }
+function catSoftMap(){ const t=theme(); return {Hazard:t.catHazardSoft, Inspeksi:t.catInspeksiSoft, BBS:t.catBBSSoft, PTO:t.catPTOSoft}; }
+
+function pct(x, digits){
+  if (x == null || isNaN(x)) return '—';
+  return (x*100).toFixed(digits||0) + '%';
+}
+
+function statusOf(avg){
+  if (avg >= 0.75) return {key:'good', label:'Baik'};
+  if (avg >= 0.45) return {key:'warning', label:'Cukup'};
+  return {key:'critical', label:'Perlu Perhatian'};
+}
+
+Chart.defaults.font.family = "'IBM Plex Sans', system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+
+let charts = {};
+function destroyAllCharts(){
+  Object.keys(charts).forEach(id => { charts[id].destroy(); });
+  charts = {};
+}
+
+function barValueLabelPlugin(t, suffix){
+  suffix = suffix || '%';
+  return {
+    id: 'barValueLabel_' + Math.random().toString(36).slice(2),
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      const horizontal = chart.options.indexAxis === 'y';
+      chart.data.datasets.forEach((ds, dsIndex) => {
+        const meta = chart.getDatasetMeta(dsIndex);
+        meta.data.forEach((bar, i) => {
+          const val = ds.data[i];
+          if (val == null) return;
+          ctx.save();
+          ctx.fillStyle = t.secondary;
+          ctx.font = "600 11px 'IBM Plex Mono', monospace";
+          if (horizontal) {
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(val + suffix, bar.x + 6, bar.y);
+          } else {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(val + suffix, bar.x, bar.y - 5);
+          }
+          ctx.restore();
+        });
+      });
+    }
+  };
+}
+
+// ---------------- Sidebar / roster ----------------
+
+function renderRoster(filter){
+  filter = (filter || '').trim().toLowerCase();
+  const el = document.getElementById('rosterList');
+  el.innerHTML = '';
+  let any = false;
+  DATA.overview.deptOrder.forEach(dept => {
+    const items = DATA.overview.deptPeople[dept].filter(p => p.name.toLowerCase().includes(filter));
+    if (!items.length) return;
+    any = true;
+    const wrap = document.createElement('div');
+    wrap.className = 'roster-dept';
+    const label = document.createElement('div');
+    label.className = 'roster-dept-label';
+    const s1 = document.createElement('span'); s1.textContent = dept;
+    const s2 = document.createElement('span'); s2.textContent = pct(DATA.overview.deptAvg[dept]);
+    label.appendChild(s1); label.appendChild(s2);
+    wrap.appendChild(label);
+    items.forEach(p => {
+      const st = statusOf(p.avg);
+      const btn = document.createElement('button');
+      btn.className = 'roster-item' + (currentPerson === p.name ? ' active' : '');
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = 'var(--status-' + st.key + ')';
+      const nm = document.createElement('span');
+      nm.className = 'nm'; nm.textContent = p.name;
+      const pc = document.createElement('span');
+      pc.className = 'pc'; pc.textContent = pct(p.avg);
+      btn.appendChild(dot); btn.appendChild(nm); btn.appendChild(pc);
+      btn.onclick = () => selectPerson(p.name);
+      wrap.appendChild(btn);
+    });
+    el.appendChild(wrap);
+  });
+  if (!any) {
+    const empty = document.createElement('div');
+    empty.className = 'roster-empty';
+    empty.textContent = 'Tidak ditemukan.';
+    el.appendChild(empty);
+  }
+}
+
+function renderMobileSelect(){
+  const sel = document.getElementById('mobileSelect');
+  sel.innerHTML = '';
+  const opt0 = document.createElement('option');
+  opt0.value = ''; opt0.textContent = 'Pilih karyawan...';
+  sel.appendChild(opt0);
+  DATA.overview.deptOrder.forEach(dept => {
+    const grp = document.createElement('optgroup');
+    grp.label = dept;
+    DATA.overview.deptPeople[dept].forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.name;
+      opt.textContent = p.name + ' (' + pct(p.avg) + ')';
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+}
+function onMobileSelect(name){ if (name) selectPerson(name); }
+
+let currentPerson = null;
+
+function showOverview(){
+  currentPerson = null;
+  document.getElementById('navOverviewBtn').classList.add('active');
+  document.getElementById('view-overview').hidden = false;
+  document.getElementById('view-person').hidden = true;
+  document.getElementById('mobileSelect').value = '';
+  renderRoster(document.getElementById('searchInput').value);
+  renderOverview();
+  window.scrollTo(0,0);
+}
+
+function selectPerson(name){
+  if (!DATA.people[name]) return;
+  currentPerson = name;
+  document.getElementById('navOverviewBtn').classList.remove('active');
+  document.getElementById('view-overview').hidden = true;
+  document.getElementById('view-person').hidden = false;
+  document.getElementById('mobileSelect').value = name;
+  renderRoster(document.getElementById('searchInput').value);
+  renderPerson(name);
+  window.scrollTo(0,0);
+}
+
+document.getElementById('searchInput').addEventListener('input', e => renderRoster(e.target.value));
+
+// ---------------- Overview view ----------------
+
+function renderMeterList(containerId, list){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  list.forEach(p => {
+    const st = statusOf(p.avg);
+    const rank = DATA.people[p.name].rank;
+    const row = document.createElement('button');
+    row.className = 'meter-row';
+    row.innerHTML =
+      '<span class="meter-rank">#' + rank + '</span>' +
+      '<span class="meter-name">' + p.name + '</span>' +
+      '<span class="meter-track"><span class="meter-fill ' + st.key + '" style="width:' + Math.max(2, p.avg*100) + '%"></span></span>' +
+      '<span class="meter-pct">' + pct(p.avg) + '</span>';
+    row.onclick = () => selectPerson(p.name);
+    el.appendChild(row);
+  });
+}
+
+function histogram(dist){
+  const bins = new Array(10).fill(0);
+  dist.forEach(v => {
+    const idx = Math.min(9, Math.floor(v*10));
+    bins[idx]++;
+  });
+  return bins;
+}
+
+function renderOverview(){
+  const ov = DATA.overview;
+  const catAvg = ov.categoryAvgOverall;
+  const bestCat = CATS.reduce((a,b) => catAvg[a] >= catAvg[b] ? a : b);
+  const worstCat = CATS.reduce((a,b) => catAvg[a] <= catAvg[b] ? a : b);
+  const bestDept = ov.deptOrder[0];
+  const overallStatus = statusOf(ov.overallCompanyAvg);
+
+  const el = document.getElementById('view-overview');
+  el.innerHTML =
+    '<div class="topline">Dasbor Keselamatan &middot; ' + ov.totalDept + ' Departemen &middot; ' + ov.totalPeople + ' Karyawan</div>' +
+    '<h1 class="page-title">KPI SAP &mdash; Ringkasan Umum</h1>' +
+    '<p class="page-sub">Pencapaian program Hazard Report, Inspeksi, BBS, dan PTO untuk ' + ov.totalPeople + ' karyawan di ' + ov.totalDept + ' departemen, periode Juni&ndash;September 2026.</p>' +
+
+    '<div class="stat-row">' +
+      '<div class="stat-tile"><div class="stat-label">Rata-rata Perusahaan</div><div class="stat-value ' + overallStatus.key + '">' + pct(ov.overallCompanyAvg,1) + '</div><div class="stat-foot">seluruh kategori &amp; bulan</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Departemen Terbaik</div><div class="stat-value" style="font-size:19px;">' + bestDept + '</div><div class="stat-foot">' + pct(ov.deptAvg[bestDept],1) + ' rata-rata</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Kategori Tertinggi</div><div class="stat-value" style="font-size:19px;">' + bestCat + '</div><div class="stat-foot">' + pct(catAvg[bestCat],1) + ' tercapai</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Kategori Terendah</div><div class="stat-value" style="font-size:19px;">' + worstCat + '</div><div class="stat-foot">' + pct(catAvg[worstCat],1) + ' &mdash; perlu dorongan</div></div>' +
+    '</div>' +
+
+    '<div class="card" style="margin-bottom:14px;">' +
+      '<div class="card-title">Tren Pencapaian Bulanan per Kategori</div>' +
+      '<div class="card-note">Rata-rata seluruh karyawan, Juni&ndash;September 2026</div>' +
+      '<div class="legend-row" id="ovTrendLegend"></div>' +
+      '<div class="chart-box h-260"><canvas id="ovTrendChart"></canvas></div>' +
+    '</div>' +
+
+    '<div class="card-grid">' +
+      '<div class="card">' +
+        '<div class="card-title">Rata-rata Pencapaian per Departemen</div>' +
+        '<div class="card-note">Diurutkan dari tertinggi ke terendah</div>' +
+        '<div class="chart-box" style="height:360px;"><canvas id="ovDeptChart"></canvas></div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<div class="card-title">Rata-rata per Kategori KPI</div>' +
+        '<div class="card-note">Seluruh karyawan, 4 bulan</div>' +
+        '<div class="chart-box h-200"><canvas id="ovCatChart"></canvas></div>' +
+        '<div class="card-title" style="margin-top:20px;">Distribusi Skor Karyawan</div>' +
+        '<div class="card-note">Jumlah karyawan per rentang pencapaian</div>' +
+        '<div class="chart-box h-150"><canvas id="ovDistChart"></canvas></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">Peringkat Karyawan</div>' +
+      '<div class="card-note">5 tertinggi dan 5 terendah berdasarkan rata-rata keseluruhan</div>' +
+      '<div class="leaderboard-grid">' +
+        '<div><div class="leaderboard-label">Top 5</div><div class="meter-list" id="ovTop5"></div></div>' +
+        '<div><div class="leaderboard-label">Perlu Perhatian</div><div class="meter-list" id="ovBottom5"></div></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="foot-note">' + DATA.generatedNote + ' Klasifikasi status: Baik &ge;75%, Cukup 45&ndash;74%, Perlu Perhatian &lt;45%. Sumber: KPI_SAP.xlsx (sheet Juni&ndash;September 2026).</div>';
+
+  destroyAllCharts();
+  const t = theme();
+
+  const legendEl = document.getElementById('ovTrendLegend');
+  const cmap = catColorMap();
+  legendEl.innerHTML = CATS.map(c => '<span class="legend-item"><span class="legend-swatch" style="background:' + cmap[c] + '"></span>' + c + '</span>').join('');
+
+  charts.ovTrend = new Chart(document.getElementById('ovTrendChart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS,
+      datasets: CATS.map(c => ({
+        label: c,
+        data: MONTHS.map(m => +(ov.companyAvgByMonth[m][c]*100).toFixed(1)),
+        borderColor: cmap[c],
+        backgroundColor: cmap[c],
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+      },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v+'%', color: t.muted }, grid: { color: t.grid }, border: { color: t.baseline } },
+        x: { ticks: { color: t.secondary }, grid: { display: false }, border: { color: t.baseline } }
+      }
+    }
+  });
+
+  charts.ovDept = new Chart(document.getElementById('ovDeptChart'), {
+    type: 'bar',
+    data: {
+      labels: ov.deptOrder,
+      datasets: [{
+        data: ov.deptOrder.map(d => +(ov.deptAvg[d]*100).toFixed(1)),
+        backgroundColor: t.catHazard,
+        borderRadius: 4,
+        maxBarThickness: 18,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { right: 34 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.parsed.x + '%' } }
+      },
+      scales: {
+        x: { min: 0, max: 100, ticks: { callback: v => v+'%', color: t.muted }, grid: { color: t.grid }, border: { color: t.baseline } },
+        y: { ticks: { color: t.secondary, font: { size: 11.5 } }, grid: { display: false }, border: { color: t.baseline } }
+      }
+    },
+    plugins: [barValueLabelPlugin(t)]
+  });
+
+  charts.ovCat = new Chart(document.getElementById('ovCatChart'), {
+    type: 'bar',
+    data: {
+      labels: CATS,
+      datasets: [{
+        data: CATS.map(c => +(catAvg[c]*100).toFixed(1)),
+        backgroundColor: CATS.map(c => cmap[c]),
+        borderRadius: 5,
+        maxBarThickness: 50,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 20 } },
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v+'%', color: t.muted }, grid: { color: t.grid }, border: { color: t.baseline } },
+        x: { ticks: { color: t.secondary }, grid: { display: false }, border: { color: t.baseline } }
+      }
+    },
+    plugins: [barValueLabelPlugin(t)]
+  });
+
+  const bins = histogram(ov.distribution);
+  const binLabels = ['0-10','10-20','20-30','30-40','40-50','50-60','60-70','70-80','80-90','90-100'];
+  charts.ovDist = new Chart(document.getElementById('ovDistChart'), {
+    type: 'bar',
+    data: { labels: binLabels, datasets: [{ data: bins, backgroundColor: t.catHazard, borderRadius: 3, maxBarThickness: 28 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' orang' } } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, color: t.muted }, grid: { color: t.grid }, border: { color: t.baseline } },
+        x: { ticks: { color: t.muted, font: { size: 9.5 } }, grid: { display: false }, border: { color: t.baseline } }
+      }
+    }
+  });
+
+  renderMeterList('ovTop5', ov.top5);
+  renderMeterList('ovBottom5', ov.bottom5);
+}
+
+// ---------------- Person view ----------------
+
+function renderPerson(name){
+  const p = DATA.people[name];
+  const ov = DATA.overview;
+  const status = statusOf(p.overallAvg);
+  const bestCat = CATS.reduce((a,b) => p.avgByCategory[a] >= p.avgByCategory[b] ? a : b);
+  const worstCat = CATS.reduce((a,b) => p.avgByCategory[a] <= p.avgByCategory[b] ? a : b);
+  const initials = name.split(' ').filter(Boolean).map(w => w[0]).slice(0,2).join('').toUpperCase();
+
+  const el = document.getElementById('view-person');
+  el.innerHTML =
+    '<div class="topline"><button onclick="showOverview()">&larr; Ringkasan Umum</button></div>' +
+    '<div class="person-head">' +
+      '<div class="avatar">' + initials + '</div>' +
+      '<div class="person-name-block">' +
+        '<h1>' + name + '</h1>' +
+        '<div class="person-meta">' +
+          '<span class="tag">' + p.dept + '</span>' +
+          '<span class="pill ' + status.key + '"><span class="dot"></span>' + status.label + '</span>' +
+          '<span class="tag">Peringkat #' + p.rank + ' dari ' + TOTAL_PEOPLE + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="stat-row">' +
+      '<div class="stat-tile"><div class="stat-label">Rata-rata Keseluruhan</div><div class="stat-value ' + status.key + '">' + pct(p.overallAvg,1) + '</div><div class="stat-foot">4 kategori &times; ' + p.monthsPresent.length + ' bulan tercatat</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Kategori Terbaik</div><div class="stat-value" style="font-size:19px;">' + bestCat + '</div><div class="stat-foot">' + pct(p.avgByCategory[bestCat],1) + ' tercapai</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Perlu Perhatian</div><div class="stat-value" style="font-size:19px;">' + worstCat + '</div><div class="stat-foot">' + pct(p.avgByCategory[worstCat],1) + ' tercapai</div></div>' +
+      '<div class="stat-tile"><div class="stat-label">Data Tercatat</div><div class="stat-value">' + p.monthsPresent.length + '/4</div><div class="stat-foot">bulan (Jun&ndash;Sep 2026)</div></div>' +
+    '</div>' +
+
+    '<div class="card-grid">' +
+      '<div class="card">' +
+        '<div class="card-title">Tren Pencapaian Bulanan</div>' +
+        '<div class="card-note">Rata-rata 4 kategori per bulan</div>' +
+        '<div class="chart-box h-220"><canvas id="pTrendChart"></canvas></div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<div class="card-title">Profil per Kategori</div>' +
+        '<div class="card-note">' + name + ' vs rata-rata perusahaan</div>' +
+        '<div class="legend-row">' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--person-accent)"></span>' + name + '</span>' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--benchmark)"></span>Rata-rata Perusahaan</span>' +
+        '</div>' +
+        '<div class="chart-box h-220"><canvas id="pRadarChart"></canvas></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">Rincian per Kategori Setiap Bulan</div>' +
+      '<div class="card-note">Hazard Report, Inspeksi, BBS, dan PTO &mdash; Juni&ndash;September 2026</div>' +
+      '<div class="mini-grid">' +
+        CATS.map(c => (
+          '<div class="mini-card">' +
+            '<div class="mini-head">' +
+              '<span class="mini-title"><span class="sw" style="background:' + catColorMap()[c] + '"></span>' + c + '</span>' +
+              '<span class="mini-val">' + pct(p.avgByCategory[c]) + ' rata-rata</span>' +
+            '</div>' +
+            '<div class="chart-box h-150"><canvas id="pMini' + c + '"></canvas></div>' +
+          '</div>'
+        )).join('') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="foot-note">' + DATA.generatedNote + ' Klasifikasi status: Baik &ge;75%, Cukup 45&ndash;74%, Perlu Perhatian &lt;45%.' +
+    (p.monthsPresent.length < 4 ? ' Catatan: ' + name + ' hanya tercatat pada ' + p.monthsPresent.length + ' dari 4 bulan periode ini.' : '') +
+    '</div>';
+
+  destroyAllCharts();
+  const t = theme();
+  const cmap = catColorMap();
+  const smap = catSoftMap();
+
+  const trendData = MONTHS.map(m => p.months[m] ? +(p.avgByMonth[m]*100).toFixed(1) : null);
+  charts.pTrend = new Chart(document.getElementById('pTrendChart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS,
+      datasets: [{
+        label: name,
+        data: trendData,
+        borderColor: t.personAccent,
+        backgroundColor: t.personAccentSoft,
+        fill: true,
+        spanGaps: false,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2.5,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.parsed.y == null ? 'Tidak ada data' : ctx.parsed.y + '%' } }
+      },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v+'%', color: t.muted }, grid: { color: t.grid }, border: { color: t.baseline } },
+        x: { ticks: { color: t.secondary }, grid: { display: false }, border: { color: t.baseline } }
+      }
+    }
+  });
+
+  charts.pRadar = new Chart(document.getElementById('pRadarChart'), {
+    type: 'radar',
+    data: {
+      labels: CATS,
+      datasets: [
+        {
+          label: name,
+          data: CATS.map(c => +(p.avgByCategory[c]*100).toFixed(1)),
+          borderColor: t.personAccent,
+          backgroundColor: t.personAccentSoft,
+          pointBackgroundColor: t.personAccent,
+          borderWidth: 2,
+        },
+        {
+          label: 'Rata-rata Perusahaan',
+          data: CATS.map(c => +(ov.categoryAvgOverall[c]*100).toFixed(1)),
+          borderColor: t.benchmark,
+          backgroundColor: 'transparent',
+          borderDash: [4,3],
+          pointBackgroundColor: t.benchmark,
+          borderWidth: 1.5,
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.r + '%' } } },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { display: false },
+          grid: { color: t.grid },
+          angleLines: { color: t.grid },
+          pointLabels: { color: t.secondary, font: { size: 11.5 } }
+        }
+      }
+    }
+  });
+
+  CATS.forEach(c => {
+    const vals = MONTHS.map(m => (p.months[m] ? +(p.months[m][c]*100).toFixed(0) : null));
+    charts['pMini'+c] = new Chart(document.getElementById('pMini'+c), {
+      type: 'line',
+      data: { labels: MONTHS, datasets: [{ data: vals, borderColor: cmap[c], backgroundColor: smap[c], fill: true, spanGaps: false, tension: 0.3, pointRadius: 3, borderWidth: 2 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y == null ? 'Tidak ada data' : ctx.parsed.y + '%' } } },
+        scales: {
+          y: { min: 0, max: 100, ticks: { callback: v => v+'%', color: t.muted, font: { size: 9 }, maxTicksLimit: 3 }, grid: { color: t.grid }, border: { display: false } },
+          x: { ticks: { color: t.muted, font: { size: 9 } }, grid: { display: false }, border: { display: false } }
+        }
+      }
+    });
+  });
+}
+
+// ---------------- Init & theme reactivity ----------------
+
+renderMobileSelect();
+showOverview();
+
+function rerenderCurrent(){
+  if (currentPerson) renderPerson(currentPerson);
+  else renderOverview();
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderCurrent);
+new MutationObserver(rerenderCurrent).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+</script>
